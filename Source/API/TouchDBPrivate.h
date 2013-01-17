@@ -21,6 +21,11 @@
 @property (readonly) TD_Server* backgroundServer;
 @property (readonly) TD_DatabaseManager* tdManager;
 @property (readonly) NSArray* allReplications;
+
+- (TDReplication*) replicationWithDatabase: (TDDatabase*)db
+                                    remote: (NSURL*)remote
+                                      view: (NSString*)view;
+
 - (TDReplication*) replicationWithDatabase: (TDDatabase*)db
                                        remote: (NSURL*)remote
                                          pull: (BOOL)pull

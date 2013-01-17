@@ -27,6 +27,7 @@
 #import "TDCanonicalJSON.h"
 #import "MYBlockUtils.h"
 #import "MYURLUtils.h"
+#import "ZSViewPuller.h"
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIApplication.h>
@@ -75,7 +76,7 @@ NSString* TDReplicatorStoppedNotification = @"TDReplicatorStopped";
     
     // TDReplicator is an abstract class; instantiating one actually instantiates a subclass.
     if ([self class] == [TDReplicator class]) {
-        Class klass = push ? [TDPusher class] : [TDPuller class];
+        Class klass = push ? [TDPusher class] : [ZSViewPuller class];
         return [[klass alloc] initWithDB: db remote: remote push: push continuous: continuous];
     }
     

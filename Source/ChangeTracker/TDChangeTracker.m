@@ -160,7 +160,6 @@
     }
 }
 
-
 - (BOOL) receivedChange: (NSDictionary*)change {
     if (![change isKindOfClass: [NSDictionary class]])
         return NO;

@@ -9,13 +9,16 @@
 #import "TDReplicator.h"
 #import "TDChangeTracker.h"
 
-@class TDViewTracker;
+@class ZSViewTracker;
 @class TDBatcher;
+@class ZSViewChangeTracker;
 
-@interface TDViewPuller : TDReplicator <TDChangeTrackerClient>
+@interface ZSViewPuller : TDReplicator
 {
-    TDViewTracker *_changeTracker;
+    ZSViewTracker *_changeTracker;
     NSMutableArray *_revsToPull;
+    NSMutableArray* _bulkRevsToPull;
+    NSMutableArray *_revsToDelete;
     NSUInteger _httpConnectionCount;
     TDBatcher *_downloadsToInsert;
 }

@@ -102,6 +102,10 @@ typedef BOOL (^TDFilterBlock) (TDRevision* revision, NSDictionary* params);
     It will initially be non-persistent; set its .persistent property to YES to make it persist. */
 - (TDReplication*) pullFromURL: (NSURL*)url;
 
+
+- (TDReplication*) pullFromURL:(NSURL *) url withView:(NSString *)viewName;
+
+
 /** Creates a pair of replications to both pull and push to database at the given URL.
     @param otherDbURL  The URL of the remote database.
     @param exclusively  If YES, any previously existing replications to or from otherDbURL will be deleted.

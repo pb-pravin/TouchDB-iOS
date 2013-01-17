@@ -197,6 +197,21 @@
     return repl;
 }
 
+//TODO FIX THIS UP BETTER
+
+- (TDReplication *) replicationWithDatabase: (TDDatabase*)database
+                                    remote: (NSURL*)remote
+                                      view: (NSString*)view
+{
+
+    TDReplication * repl = [[TDReplication alloc] initWithDatabase:database remote:remote pull:YES];
+
+    [_replications addObject: repl];
+
+    return repl;
+}
+
+
 
 - (NSArray*) createReplicationsBetween: (TDDatabase*)database
                                    and: (NSURL*)otherDbURL

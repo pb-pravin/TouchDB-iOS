@@ -251,6 +251,9 @@ NSString* const kTDDatabaseChangeNotification = @"TDDatabaseChange";
     return [_manager createReplicationsBetween: self and: otherDbURL exclusively: exclusively];
 }
 
+- (TDReplication*) pullFromURL:(NSURL *) url withView:(NSString *)viewName {
+    return [_manager replicationWithDatabase: self remote:url view:viewName];
+}
 
 @end
 

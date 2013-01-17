@@ -422,12 +422,17 @@
 		DA147C3C14BCAC780052DA4D /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA147C3A14BCAC780052DA4D /* MobileCoreServices.framework */; };
 		DA147C3D14BCAC780052DA4D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA147C3B14BCAC780052DA4D /* Security.framework */; };
 		DA147C3E14BCAC9D0052DA4D /* TDListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 275315DE14ACF0A20065964D /* TDListener.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		FFECA4342FE73FFB94B8944B /* TDViewPuller.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA7D0954F952DBC558499 /* TDViewPuller.h */; };
-		FFECA449AC102A2D5DA0A561 /* TDViewTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECAB35AA006570FEFE345F /* TDViewTracker.m */; };
-		FFECA61F5D2D05A3037B9424 /* TDViewPuller.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECAF8917D3B4DCF859A565 /* TDViewPuller.m */; };
-		FFECA87EA2F1EB8FB02EA270 /* TDViewTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECAB35AA006570FEFE345F /* TDViewTracker.m */; };
-		FFECA9EE1DB4194DA48D1AF8 /* TDViewTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA92389B9882666EA8265 /* TDViewTracker.h */; };
-		FFECACDE6049883726ECD807 /* TDViewPuller.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECAF8917D3B4DCF859A565 /* TDViewPuller.m */; };
+		FFECA0CF0EE2A8006D62CA21 /* ZSViewTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */; };
+		FFECA48CCF0BC964543F62A4 /* ZSViewChangeTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA6ABD1C83E2BAEAE2A51 /* ZSViewChangeTracker.h */; };
+		FFECA5100B802822D3BB0A54 /* ZSViewTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA541B0E07F7F08C523C8 /* ZSViewTracker.h */; };
+		FFECA65251896AD1AE136EA7 /* ZSViewTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */; };
+		FFECA6B83E4AA44C2067C976 /* ZSViewPuller.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA6AD399012D491322273 /* ZSViewPuller.m */; };
+		FFECABB3B8E3B739FF95A882 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA147C3A14BCAC780052DA4D /* MobileCoreServices.framework */; };
+		FFECAC35AFE5CB8CFEA0ACA3 /* ZSViewChangeTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA8DB0426B7A64805337E /* ZSViewChangeTracker.m */; };
+		FFECAC951FD1BE66DFBC2530 /* ZSViewPuller.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA6AD399012D491322273 /* ZSViewPuller.m */; };
+		FFECAC974C55E7D1E6A22429 /* ZSViewPuller.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA38B21726FC845A443DE /* ZSViewPuller.h */; };
+		FFECAD07A73D5BD7D59BAFF9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27103F8714EA076600DF7209 /* SystemConfiguration.framework */; };
+		FFECAF96DE0CD2950D377C00 /* ZSViewChangeTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA8DB0426B7A64805337E /* ZSViewChangeTracker.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -866,10 +871,12 @@
 		DA147C3614BCAC3B0052DA4D /* TouchDBListener.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TouchDBListener.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA147C3A14BCAC780052DA4D /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		DA147C3B14BCAC780052DA4D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
-		FFECA7D0954F952DBC558499 /* TDViewPuller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDViewPuller.h; sourceTree = "<group>"; };
-		FFECA92389B9882666EA8265 /* TDViewTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDViewTracker.h; sourceTree = "<group>"; };
-		FFECAB35AA006570FEFE345F /* TDViewTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDViewTracker.m; sourceTree = "<group>"; };
-		FFECAF8917D3B4DCF859A565 /* TDViewPuller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDViewPuller.m; sourceTree = "<group>"; };
+		FFECA38B21726FC845A443DE /* ZSViewPuller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSViewPuller.h; sourceTree = "<group>"; };
+		FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSViewTracker.m; sourceTree = "<group>"; };
+		FFECA541B0E07F7F08C523C8 /* ZSViewTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSViewTracker.h; sourceTree = "<group>"; };
+		FFECA6ABD1C83E2BAEAE2A51 /* ZSViewChangeTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSViewChangeTracker.h; sourceTree = "<group>"; };
+		FFECA6AD399012D491322273 /* ZSViewPuller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSViewPuller.m; sourceTree = "<group>"; };
+		FFECA8DB0426B7A64805337E /* ZSViewChangeTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSViewChangeTracker.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -928,6 +935,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				27B0B7AA1492B83B00A817AD /* Foundation.framework in Frameworks */,
+				FFECAD07A73D5BD7D59BAFF9 /* SystemConfiguration.framework in Frameworks */,
+				FFECABB3B8E3B739FF95A882 /* MobileCoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1014,7 +1023,12 @@
 				2776A5A316A48EEB006FF199 /* Auth */,
 				279EB2D8149192DF00E74185 /* Support */,
 				2713789014BCCA7B0058C5CD /* Tests */,
-				FFECA02CA21DEDFE3D98D70E /* ViewReplicator */,
+				FFECA38B21726FC845A443DE /* ZSViewPuller.h */,
+				FFECA6AD399012D491322273 /* ZSViewPuller.m */,
+				FFECA541B0E07F7F08C523C8 /* ZSViewTracker.h */,
+				FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */,
+				FFECA6ABD1C83E2BAEAE2A51 /* ZSViewChangeTracker.h */,
+				FFECA8DB0426B7A64805337E /* ZSViewChangeTracker.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1573,17 +1587,6 @@
 			path = Elements;
 			sourceTree = "<group>";
 		};
-		FFECA02CA21DEDFE3D98D70E /* ViewReplicator */ = {
-			isa = PBXGroup;
-			children = (
-				FFECA7D0954F952DBC558499 /* TDViewPuller.h */,
-				FFECAF8917D3B4DCF859A565 /* TDViewPuller.m */,
-				FFECA92389B9882666EA8265 /* TDViewTracker.h */,
-				FFECAB35AA006570FEFE345F /* TDViewTracker.m */,
-			);
-			name = ViewReplicator;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1724,8 +1727,9 @@
 				27F5B18716519F2400126D0D /* TDUITableSource.h in Headers */,
 				27F5B18916519F8F00126D0D /* MYDynamicObject.h in Headers */,
 				2776A59216A0C3A6006FF199 /* TDBrowserIDAuthorizer.h in Headers */,
-				FFECA9EE1DB4194DA48D1AF8 /* TDViewTracker.h in Headers */,
-				FFECA4342FE73FFB94B8944B /* TDViewPuller.h in Headers */,
+				FFECAC974C55E7D1E6A22429 /* ZSViewPuller.h in Headers */,
+				FFECA5100B802822D3BB0A54 /* ZSViewTracker.h in Headers */,
+				FFECA48CCF0BC964543F62A4 /* ZSViewChangeTracker.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2291,8 +2295,9 @@
 				27846FBE15D475DF0030122F /* MYStreamUtils.m in Sources */,
 				27B15518164A118100DF5E2C /* TD_Database_Tests.m in Sources */,
 				2776A59616A0C3B1006FF199 /* TDBrowserIDAuthorizer.m in Sources */,
-				FFECA87EA2F1EB8FB02EA270 /* TDViewTracker.m in Sources */,
-				FFECACDE6049883726ECD807 /* TDViewPuller.m in Sources */,
+				FFECAC951FD1BE66DFBC2530 /* ZSViewPuller.m in Sources */,
+				FFECA0CF0EE2A8006D62CA21 /* ZSViewTracker.m in Sources */,
+				FFECAC35AFE5CB8CFEA0ACA3 /* ZSViewChangeTracker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2300,8 +2305,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFECA449AC102A2D5DA0A561 /* TDViewTracker.m in Sources */,
-				FFECA61F5D2D05A3037B9424 /* TDViewPuller.m in Sources */,
+				FFECA6B83E4AA44C2067C976 /* ZSViewPuller.m in Sources */,
+				FFECA65251896AD1AE136EA7 /* ZSViewTracker.m in Sources */,
+				FFECAF96DE0CD2950D377C00 /* ZSViewChangeTracker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2759,6 +2765,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = Source/TouchDBPrefix.h;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2778,6 +2785,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = Source/TouchDBPrefix.h;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2805,6 +2813,7 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				INFOPLIST_FILE = "Source/TouchDB-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -2829,6 +2838,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Source/TouchDBPrefix.h;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				INFOPLIST_FILE = "Source/TouchDB-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -2962,6 +2972,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Source/TouchDBPrefix.h;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = YES;
 				GCC_WARN_SIGN_COMPARE = NO;
@@ -2985,6 +2996,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Source/TouchDBPrefix.h;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = YES;
 				GCC_WARN_SIGN_COMPARE = NO;
