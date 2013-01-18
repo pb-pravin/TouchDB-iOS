@@ -56,9 +56,11 @@
     if (error) {
         self.error = error;
         Warn(@"%@: JSON Parse Error - %@", self, error);
+    } else if (json[@"error"]) {
+        Warn(@"%@: Remote view at URL %@ invalid - %@", self, self.changesFeedURL, json);
+    } else {
+        [self receivedChanges:[json objectForKey:@"rows"] errorMessage:nil];
     }
-
-    [self receivedChanges:[json objectForKey:@"rows"] errorMessage:nil];
 
 }
 
