@@ -151,12 +151,12 @@
 
     //If there are no changes make sure we delete any old documents right away
     if (changes.count == 0) {
-        NSLog(@"Nothing to be synced");
 
-        //TODO Need to delete the old documents here
+        LogTo(Sync, @"%@: No new items to sync", self);
+
         [self deleteOldDocuments];
-
         [super stopped];
+
     } else {
         for (NSDictionary *change in changes) {
             [self changeTrackerReceivedChange:change];
@@ -176,15 +176,18 @@
             TD_Revision *deletedRev = [_db putRevision:revToDelete prevRevisionID:rev.revID allowConflict:NO status:&status];
 
             if (TDStatusIsError(status)) {
-                NSLog(@"Cant delete doc");
+                Warn(@"%@: Cant delete rev %@", self, rev);
+            } else {
+                LogTo(Sync, @"%@: Doc deleted %@", self, deletedRev);
             }
+
         }
     }
     [_downloadsToInsert flushAll];
 }
 
 - (void)changeTrackerStopped:(TDChangeTracker *)tracker {
-    NSLog(@"Change Tracker Stopped!");
+    LogTo(Sync, @"%@: Sync stopped", self);
 }
 
 - (void)processInbox:(TD_RevisionList *)inbox {
