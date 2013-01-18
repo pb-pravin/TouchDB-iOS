@@ -296,11 +296,23 @@
                     [self revisionFailed];
                     continue;
                 }
-                //LogTo(SyncVerbose, @"%@ inserting %@ %@", self, rev.docID, [history my_compactDescription]);
 
-                //We always replace whatever we have for a doc in the DB - We only want the current winning revision (ZS)
+                LogTo(SyncVerbose, @"%@ inserting %@ %@", self, rev.docID, [history my_compactDescription]);
+
+                TD_RevisionList *revList = [_db getAllRevisionsOfDocumentID:rev.docID onlyCurrent:YES];
                 TDStatus status = 0;
-                [_db putRevision:rev prevRevisionID:nil allowConflict:NO status:&status];
+
+                if (revList.count > 0) {
+
+                    //We always replace whatever we have for a doc in the DB - We only want the current winning revision (ZS)
+                    [_db putRevision:rev prevRevisionID:nil allowConflict:NO status:&status];
+
+                } else{
+
+                    //Insert new document
+                    status = [_db forceInsert:rev revisionHistory:history source:_remote];
+
+                }
 
                 if (TDStatusIsError(status)) {
                     if (status == kTDStatusForbidden)
