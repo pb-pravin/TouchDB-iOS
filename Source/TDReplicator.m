@@ -55,6 +55,8 @@ NSString* TDReplicatorStoppedNotification = @"TDReplicatorStopped";
 
 @implementation TDReplicator
 
+@synthesize viewName = _viewName;
+
 + (NSString *)progressChangedNotification
 {
     return TDReplicatorProgressChangedNotification;
@@ -65,25 +67,30 @@ NSString* TDReplicatorStoppedNotification = @"TDReplicatorStopped";
     return TDReplicatorStoppedNotification;
 }
 
-- (id) initWithDB:(TD_Database *)db
-           remote:(NSURL *)remote
-         viewName:(NSString *)view {
-
+- (id) initWithDB: (TD_Database*)db
+           remote: (NSURL*)remote
+             push: (BOOL)push
+       continuous: (BOOL)continuous
+         viewName: (NSString *)view
+{
     NSParameterAssert(db);
     NSParameterAssert(remote);
 
     // TDReplicator is an abstract class; instantiating one actually instantiates a subclass.
     if ([self class] == [TDReplicator class]) {
-        return [[ZSViewPuller alloc] initWithDB:db remote:remote viewName:view];
+        if (view == nil) {
+            return [self initWithDB:db remote:remote push:push continuous:continuous];
+        } else {
+            return [[ZSViewPuller alloc] initWithDB:db remote:remote push:NO continuous:continuous viewName:view];
+        }
     }
 
     self = [super init];
     if (self) {
         _db = db;
         _remote = remote;
-        _continuous = NO;
+        _continuous = continuous;
         _viewName = view;
-
         Assert(push == self.isPush);
 
         static int sLastSessionID = 0;

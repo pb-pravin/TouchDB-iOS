@@ -20,6 +20,7 @@
 
 @synthesize deleteDocs = _deleteDocs;
 @synthesize localView = _localView;
+@synthesize remoteView = _remoteView;
 
 - (id)initWithDatabaseURL:(NSURL *)databaseURL client: (id<TDChangeTrackerClient>)client {
     self = [super init];

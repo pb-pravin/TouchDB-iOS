@@ -328,10 +328,12 @@ static NSDictionary* parseSourceOrTarget(NSDictionary* properties, NSString* key
 
     BOOL continuous = [$castIf(NSNumber, properties[@"continuous"]) boolValue];
 
-    TDReplicator* repl = [[TDReplicator alloc] initWithDB: db
-                                                   remote: remote
-                                                     push: push
-                                               continuous: continuous];
+    TDReplicator *repl = [[TDReplicator alloc] initWithDB: db
+                                         remote: remote
+                                           push: push
+                                     continuous: continuous
+                                       viewName:properties[@"viewName"]];
+
     if (!repl) {
         if (outStatus)
             *outStatus = kTDStatusServerError;

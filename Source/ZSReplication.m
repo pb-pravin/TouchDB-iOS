@@ -39,7 +39,14 @@
 {
     // The setup should use properties, not ivars, because the ivars may change on the main thread.
     TDStatus status;
-    TDReplicator* repl = [server_dbmgr replicatorWithProperties: properties status: &status];
+
+    //Add in the view property so we know which TD init method to call later
+    NSMutableDictionary *newProperties = [[NSMutableDictionary alloc] init];
+    [newProperties setObject:_view forKey:@"viewName"];
+    [newProperties addEntriesFromDictionary:properties];
+
+    TDReplicator* repl = [server_dbmgr replicatorWithProperties: [[NSDictionary alloc] initWithDictionary:newProperties] status: &status];
+
     if (!repl) {
         MYOnThread(_mainThread, ^{
             [self updateMode: kTDReplicationStopped

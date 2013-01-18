@@ -59,6 +59,8 @@ extern NSString* TDReplicatorStoppedNotification;
 
 - (id) initWithDB: (TD_Database*)db
            remote: (NSURL*)remote
+             push: (BOOL)push
+       continuous: (BOOL)continuous
          viewName: (NSString *)view;
 
 @property (weak, readonly) TD_Database* db;
@@ -68,7 +70,10 @@ extern NSString* TDReplicatorStoppedNotification;
 @property (copy) NSString* filterName;
 @property (copy) NSDictionary* filterParameters;
 @property (copy) NSDictionary* options;
-@property (readonly) NSString *viewName;
+
+//View name
+//TODO fix this property (ZS)
+@property (nonatomic, strong) NSString *viewName;
 
 /** Optional dictionary of headers to be added to all requests to remote servers. */
 @property (copy) NSDictionary* requestHeaders;
