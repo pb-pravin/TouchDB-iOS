@@ -154,8 +154,7 @@
         NSLog(@"Nothing to be synced");
 
         //TODO Need to delete the old documents here
-
-        //[self deleteOldDocuments];
+        [self deleteOldDocuments];
 
         [super stopped];
     } else {
@@ -171,8 +170,14 @@
     for (NSString *docID in _revsToDelete) {
         TD_RevisionList *list = [_db getAllRevisionsOfDocumentID:docID onlyCurrent:YES];
         for (TD_Revision *rev in list) {
-            TD_Revision *revToDelete = [[TD_Revision alloc] initWithDocID:rev.docID revID:rev.revID deleted:YES];
-            [_downloadsToInsert queueObject:rev];
+            TD_Revision *revToDelete = [[TD_Revision alloc] initWithDocID:rev.docID revID:nil deleted:YES];
+
+            TDStatus status = 0;
+            TD_Revision *deletedRev = [_db putRevision:revToDelete prevRevisionID:rev.revID allowConflict:NO status:&status];
+
+            if (TDStatusIsError(status)) {
+                NSLog(@"Cant delete doc");
+            }
         }
     }
     [_downloadsToInsert flushAll];
