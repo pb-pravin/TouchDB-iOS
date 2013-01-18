@@ -299,7 +299,12 @@
                 //LogTo(SyncVerbose, @"%@ inserting %@ %@", self, rev.docID, [history my_compactDescription]);
 
                 // Insert the revision:
-                int status = [_db forceInsert:rev revisionHistory:history source:_remote];
+                // int status = [_db forceInsert:rev revisionHistory:history source:_remote];
+
+                // Insert the revision:
+                TDStatus status = 0;
+                [_db putRevision:rev prevRevisionID:nil allowConflict:NO status:&status];
+
                 if (TDStatusIsError(status)) {
                     if (status == kTDStatusForbidden)
                         LogTo(Sync, @"%@: Remote rev failed validation: %@", self, rev);
