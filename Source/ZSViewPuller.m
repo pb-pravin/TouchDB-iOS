@@ -298,10 +298,7 @@
                 }
                 //LogTo(SyncVerbose, @"%@ inserting %@ %@", self, rev.docID, [history my_compactDescription]);
 
-                // Insert the revision:
-                // int status = [_db forceInsert:rev revisionHistory:history source:_remote];
-
-                // Insert the revision:
+                //We always replace whatever we have for a doc in the DB - We only want the current winning revision (ZS)
                 TDStatus status = 0;
                 [_db putRevision:rev prevRevisionID:nil allowConflict:NO status:&status];
 
