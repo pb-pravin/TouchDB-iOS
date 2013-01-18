@@ -14,7 +14,6 @@
 #import "TD_Server.h"
 #import "TDURLProtocol.h"
 #import "TDInternal.h"
-#import "ZSReplication.h"
 
 
 @implementation TDDatabaseManager
@@ -204,7 +203,7 @@
                                       view: (NSString*)view
 {
 
-    ZSReplication * repl = [[ZSReplication alloc] initWithDatabase:database remote:remote viewName:view];
+    TDReplication *repl = [[TDReplication alloc] initWithDatabase:database remote:remote viewName:view];
 
     [_replications addObject: repl];
 

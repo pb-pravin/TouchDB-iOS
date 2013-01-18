@@ -25,7 +25,7 @@ NSString* const kTDReplicationChangeNotification = @"TDReplicationChange";
 
 
 @interface TDReplication ()
-@property (copy) id source, target;  // document properties
+@property (copy) id source, target, view;  // document properties
 
 @property (nonatomic, readwrite) bool running;
 @property (nonatomic, readwrite) TDReplicationMode mode;
@@ -45,6 +45,19 @@ NSString* const kTDReplicationChangeNotification = @"TDReplicationChange";
     NSError* _error;
 
     NSString* _bg_documentID;           // ONLY used on the server thread
+}
+
+- (id) initWithDatabase: (TDDatabase*)database
+                 remote: (NSURL*)remote
+               viewName: (NSString *)view
+{
+
+    self = [self initWithDatabase:database remote:remote pull:YES];
+    if (self) {
+        self.view = view;
+    }
+    return self;
+
 }
 
 // Instantiate a new replication; it is not persistent yet
@@ -100,7 +113,7 @@ NSString* const kTDReplicationChangeNotification = @"TDReplicationChange";
 
 
 // These are the JSON properties in the replication document:
-@dynamic source, target, create_target, continuous, filter, query_params, doc_ids;
+@dynamic source, target, create_target, continuous, filter, query_params, doc_ids, view;
 
 @synthesize remoteURL=_remoteURL, pull=_pull;
 

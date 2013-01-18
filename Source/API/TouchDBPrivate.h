@@ -99,6 +99,9 @@
 - (id) initWithDatabase: (TDDatabase*)database
                  remote: (NSURL*)remote
                    pull: (BOOL)pull;
+- (id) initWithDatabase: (TDDatabase*)database
+                 remote: (NSURL*)remote
+               viewName: (NSString *)view;
 @end
 
 

@@ -332,7 +332,7 @@ static NSDictionary* parseSourceOrTarget(NSDictionary* properties, NSString* key
                                          remote: remote
                                            push: push
                                      continuous: continuous
-                                       viewName:properties[@"viewName"]];
+                                       viewName:properties[@"view"]];
 
     if (!repl) {
         if (outStatus)

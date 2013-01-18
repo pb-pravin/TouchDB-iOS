@@ -106,15 +106,6 @@ typedef enum {
 
 @property (nonatomic, readonly) TDReplicationMode mode;
 
-//Publicly expose these for the subclass (ZS)
-//TODO look at a better way to do this
-- (void) bg_updateProgress: (TDReplicator*)tdReplicator;
-
-- (void) updateMode: (TDReplicationMode)mode
-              error: (NSError*)error
-          processed: (NSUInteger)changesProcessed
-            ofTotal: (NSUInteger)changesTotal;
-
 @end
 
 

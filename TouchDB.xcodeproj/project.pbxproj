@@ -423,17 +423,14 @@
 		DA147C3D14BCAC780052DA4D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA147C3B14BCAC780052DA4D /* Security.framework */; };
 		DA147C3E14BCAC9D0052DA4D /* TDListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 275315DE14ACF0A20065964D /* TDListener.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FFECA0CF0EE2A8006D62CA21 /* ZSViewTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */; };
-		FFECA0DA9F109038053028F9 /* ZSReplication.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA41E30BE98D9AAE61257 /* ZSReplication.h */; };
 		FFECA48CCF0BC964543F62A4 /* ZSViewChangeTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA6ABD1C83E2BAEAE2A51 /* ZSViewChangeTracker.h */; };
 		FFECA5100B802822D3BB0A54 /* ZSViewTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA541B0E07F7F08C523C8 /* ZSViewTracker.h */; };
-		FFECA62D7E5AA0555D5471B1 /* ZSReplication.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA0753F75E977A5B6F2DC /* ZSReplication.m */; };
 		FFECA65251896AD1AE136EA7 /* ZSViewTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */; };
 		FFECA6B83E4AA44C2067C976 /* ZSViewPuller.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA6AD399012D491322273 /* ZSViewPuller.m */; };
 		FFECABB3B8E3B739FF95A882 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA147C3A14BCAC780052DA4D /* MobileCoreServices.framework */; };
 		FFECAC35AFE5CB8CFEA0ACA3 /* ZSViewChangeTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA8DB0426B7A64805337E /* ZSViewChangeTracker.m */; };
 		FFECAC951FD1BE66DFBC2530 /* ZSViewPuller.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA6AD399012D491322273 /* ZSViewPuller.m */; };
 		FFECAC974C55E7D1E6A22429 /* ZSViewPuller.h in Headers */ = {isa = PBXBuildFile; fileRef = FFECA38B21726FC845A443DE /* ZSViewPuller.h */; };
-		FFECACCBEB4A2C7451B6BD91 /* ZSReplication.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA0753F75E977A5B6F2DC /* ZSReplication.m */; };
 		FFECAD07A73D5BD7D59BAFF9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27103F8714EA076600DF7209 /* SystemConfiguration.framework */; };
 		FFECAF96DE0CD2950D377C00 /* ZSViewChangeTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECA8DB0426B7A64805337E /* ZSViewChangeTracker.m */; };
 /* End PBXBuildFile section */
@@ -874,9 +871,7 @@
 		DA147C3614BCAC3B0052DA4D /* TouchDBListener.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TouchDBListener.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA147C3A14BCAC780052DA4D /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		DA147C3B14BCAC780052DA4D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
-		FFECA0753F75E977A5B6F2DC /* ZSReplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSReplication.m; sourceTree = "<group>"; };
 		FFECA38B21726FC845A443DE /* ZSViewPuller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSViewPuller.h; sourceTree = "<group>"; };
-		FFECA41E30BE98D9AAE61257 /* ZSReplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSReplication.h; sourceTree = "<group>"; };
 		FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSViewTracker.m; sourceTree = "<group>"; };
 		FFECA541B0E07F7F08C523C8 /* ZSViewTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSViewTracker.h; sourceTree = "<group>"; };
 		FFECA6ABD1C83E2BAEAE2A51 /* ZSViewChangeTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSViewChangeTracker.h; sourceTree = "<group>"; };
@@ -1034,8 +1029,6 @@
 				FFECA47910F9BBCB7DCACA5D /* ZSViewTracker.m */,
 				FFECA6ABD1C83E2BAEAE2A51 /* ZSViewChangeTracker.h */,
 				FFECA8DB0426B7A64805337E /* ZSViewChangeTracker.m */,
-				FFECA0753F75E977A5B6F2DC /* ZSReplication.m */,
-				FFECA41E30BE98D9AAE61257 /* ZSReplication.h */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1737,7 +1730,6 @@
 				FFECAC974C55E7D1E6A22429 /* ZSViewPuller.h in Headers */,
 				FFECA5100B802822D3BB0A54 /* ZSViewTracker.h in Headers */,
 				FFECA48CCF0BC964543F62A4 /* ZSViewChangeTracker.h in Headers */,
-				FFECA0DA9F109038053028F9 /* ZSReplication.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2306,7 +2298,6 @@
 				FFECAC951FD1BE66DFBC2530 /* ZSViewPuller.m in Sources */,
 				FFECA0CF0EE2A8006D62CA21 /* ZSViewTracker.m in Sources */,
 				FFECAC35AFE5CB8CFEA0ACA3 /* ZSViewChangeTracker.m in Sources */,
-				FFECACCBEB4A2C7451B6BD91 /* ZSReplication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2317,7 +2308,6 @@
 				FFECA6B83E4AA44C2067C976 /* ZSViewPuller.m in Sources */,
 				FFECA65251896AD1AE136EA7 /* ZSViewTracker.m in Sources */,
 				FFECAF96DE0CD2950D377C00 /* ZSViewChangeTracker.m in Sources */,
-				FFECA62D7E5AA0555D5471B1 /* ZSReplication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
