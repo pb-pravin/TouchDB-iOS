@@ -1,7 +1,7 @@
 # ToucDB Replication Fork #
 This fork is expected to help provide a more efficent replication engine for specific architectures.
 
-The fork provides a new method that allows you to use a view as the source for replication.
+The fork provides new methods that allows you to use a remote CoucbDB view as the source for replication.
 
 
 # TouchDB #
