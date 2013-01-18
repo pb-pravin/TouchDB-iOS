@@ -39,7 +39,7 @@
 }
 
 - (NSString*) changesFeedPath {
-    return @"_all_docs";
+    return self.remoteView;
 }
 
 - (NSURL*) changesFeedURL {

@@ -8,6 +8,8 @@
 
 #import "TDModel.h"
 @class TDDatabase;
+@class TDReplicator;
+@class TD_Database;
 
 
 typedef enum {
@@ -22,6 +24,13 @@ typedef enum {
     Replications can be one-shot, continuous or persistent.
     TDReplication is a model class representing a document in the _replicator database, but unless saved an instance has only a temporary existence. Saving it makes it persistent. */
 @interface TDReplication : TDModel
+{
+    @protected
+    NSThread* _mainThread;
+    TDReplicator* _bg_replicator;       // ONLY used on the server thread
+    TD_Database* _bg_serverDatabase;    // ONLY used on the server thread
+
+}
 
 /** The local database being replicated to/from. */
 @property (nonatomic, readonly) TDDatabase* localDatabase;
@@ -31,7 +40,6 @@ typedef enum {
 
 /** Does the replication pull from (as opposed to push to) the target? */
 @property (nonatomic, readonly) bool pull;
-
 
 #pragma mark - OPTIONS:
 
@@ -98,6 +106,14 @@ typedef enum {
 
 @property (nonatomic, readonly) TDReplicationMode mode;
 
+//Publicly expose these for the subclass (ZS)
+//TODO look at a better way to do this
+- (void) bg_updateProgress: (TDReplicator*)tdReplicator;
+
+- (void) updateMode: (TDReplicationMode)mode
+              error: (NSError*)error
+          processed: (NSUInteger)changesProcessed
+            ofTotal: (NSUInteger)changesTotal;
 
 @end
 

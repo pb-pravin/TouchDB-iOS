@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Couchbase, Inc. All rights reserved.
 //
 
+#import <TouchDB/TouchDB.h>
 #import "TDReplication.h"
 #import "TouchDBPrivate.h"
 
@@ -37,18 +38,14 @@ NSString* const kTDReplicationChangeNotification = @"TDReplicationChange";
 {
     NSURL* _remoteURL;
     bool _pull;
-    NSThread* _mainThread;
     bool _started;
     bool _running;
     unsigned _completed, _total;
     TDReplicationMode _mode;
     NSError* _error;
 
-    TDReplicator* _bg_replicator;       // ONLY used on the server thread
-    TD_Database* _bg_serverDatabase;    // ONLY used on the server thread
     NSString* _bg_documentID;           // ONLY used on the server thread
 }
-
 
 // Instantiate a new replication; it is not persistent yet
 - (id) initWithDatabase: (TDDatabase*)database

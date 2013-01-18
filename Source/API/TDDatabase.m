@@ -252,7 +252,7 @@ NSString* const kTDDatabaseChangeNotification = @"TDDatabaseChange";
 }
 
 - (TDReplication*) pullFromURL:(NSURL *) url withView:(NSString *)viewName {
-    return [_manager replicationWithDatabase: self remote:url view:viewName];
+    return [_manager replicationWithDatabase:self remote:url view:viewName];
 }
 
 @end

@@ -12,6 +12,7 @@
 
 @property (nonatomic, assign) BOOL deleteDocs;
 @property (nonatomic, strong) TDView *localView;
+@property (nonatomic, strong) NSString *remoteView;
 @property (strong, nonatomic) NSDictionary *requestHeaders;
 @property (weak, nonatomic) id<TDChangeTrackerClient> client;
 @property (strong, nonatomic) NSError* error;

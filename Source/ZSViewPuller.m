@@ -47,6 +47,7 @@
 
     LogTo(SyncVerbose, @"%@: Starting tracker", self);
     _changeTracker = [[ZSViewTracker alloc] initWithDatabaseURL:self.remote client:self];
+    _changeTracker.remoteView = self.viewName;
 
     NSMutableDictionary *headers = $mdict({@"User-Agent", [TDRemoteRequest userAgentHeader]});
     [headers addEntriesFromDictionary:_requestHeaders];

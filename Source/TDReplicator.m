@@ -65,6 +65,32 @@ NSString* TDReplicatorStoppedNotification = @"TDReplicatorStopped";
     return TDReplicatorStoppedNotification;
 }
 
+- (id) initWithDB:(TD_Database *)db
+           remote:(NSURL *)remote
+         viewName:(NSString *)view {
+
+    NSParameterAssert(db);
+    NSParameterAssert(remote);
+
+    // TDReplicator is an abstract class; instantiating one actually instantiates a subclass.
+    if ([self class] == [TDReplicator class]) {
+        return [[ZSViewPuller alloc] initWithDB:db remote:remote viewName:view];
+    }
+
+    self = [super init];
+    if (self) {
+        _db = db;
+        _remote = remote;
+        _continuous = NO;
+        _viewName = view;
+
+        Assert(push == self.isPush);
+
+        static int sLastSessionID = 0;
+        _sessionID = [$sprintf(@"repl%03d", ++sLastSessionID) copy];
+    }
+    return self;
+}
 
 - (id) initWithDB: (TD_Database*)db
            remote: (NSURL*)remote
@@ -76,7 +102,7 @@ NSString* TDReplicatorStoppedNotification = @"TDReplicatorStopped";
     
     // TDReplicator is an abstract class; instantiating one actually instantiates a subclass.
     if ([self class] == [TDReplicator class]) {
-        Class klass = push ? [TDPusher class] : [ZSViewPuller class];
+        Class klass = push ? [TDPusher class] : [TDPuller class];
         return [[klass alloc] initWithDB: db remote: remote push: push continuous: continuous];
     }
     
