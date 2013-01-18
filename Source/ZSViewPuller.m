@@ -45,7 +45,7 @@
 - (void)startChangeTracker {
     Assert(!_changeTracker);
 
-    LogTo(SyncVerbose, @"starting ZSViewTracker");
+    LogTo(SyncVerbose, @"%@: Starting tracker", self);
     _changeTracker = [[ZSViewTracker alloc] initWithDatabaseURL:self.remote client:self];
 
     NSMutableDictionary *headers = $mdict({@"User-Agent", [TDRemoteRequest userAgentHeader]});
@@ -76,12 +76,12 @@
 - (void)retry {
 
     [super retry];
-
     [_changeTracker stop];
     [self beginReplicating];
 }
 
 - (void)stopped {
+
     _downloadsToInsert = nil;
     if (_revsToPull.count == 0) {
         [self deleteOldDocuments];
@@ -137,9 +137,9 @@
             TD_RevisionList *revs = [_db getAllRevisionsOfDocumentID:change[@"id"] onlyCurrent:YES];
             if (revs.count != 1) {
                 [changedDocuments addObject:change];
-            } else if (revs.count == 1){
+            } else if (revs.count == 1) {
                 TD_Revision *rev = [revs objectAtIndexedSubscript:0];
-                if (![rev.revID isEqualToString:change[@"value"][@"rev"]] ) {
+                if (![rev.revID isEqualToString:change[@"value"][@"rev"]]) {
                     [changedDocuments addObject:change];
                 }
             }
@@ -149,7 +149,7 @@
 
     }
 
-    //If there are no changes make sure we delete any old documents right away
+    //If there are no changes, make sure we delete any old documents right away
     if (changes.count == 0) {
 
         LogTo(Sync, @"%@: No new items to sync", self);
@@ -183,7 +183,7 @@
 
         }
     }
-    [_downloadsToInsert flushAll];
+    _revsToDelete = nil;
 }
 
 - (void)changeTrackerStopped:(TDChangeTracker *)tracker {
@@ -192,7 +192,6 @@
 
 - (void)processInbox:(TD_RevisionList *)inbox {
 
-    NSLog(@"ProcessInbox");
     for (TD_Revision *rev in inbox.allRevisions) {
         [self queueRemoteRevision:rev];
     }
@@ -202,7 +201,7 @@
 }
 
 // Start up some HTTP GETs, within our limit on the maximum simultaneous number
-- (void) pullRemoteRevisions {
+- (void)pullRemoteRevisions {
     while (_db && _httpConnectionCount < kMaxOpenHTTPConnections) {
 
         NSMutableArray *queue = _revsToPull;
@@ -216,7 +215,7 @@
 }
 
 // Add a revision to the appropriate queue of revs to individually GET
-- (void) queueRemoteRevision: (TD_Revision*)rev {
+- (void)queueRemoteRevision:(TD_Revision *)rev {
 
     if (!_revsToPull)
         _revsToPull = [[NSMutableArray alloc] initWithCapacity:100];
@@ -227,8 +226,7 @@
 
 // Fetches the contents of a revision from the remote db, including its parent revision ID.
 // The contents are stored into rev.properties.
-- (void) pullRemoteRevision: (TD_Revision*)rev
-{
+- (void)pullRemoteRevision:(TD_Revision *)rev {
     [self asyncTaskStarted];
     ++_httpConnectionCount;
 
@@ -236,21 +234,21 @@
     // been added since the latest revisions we have locally.
     // See: http://wiki.apache.org/couchdb/HTTP_Document_API#GET
     // See: http://wiki.apache.org/couchdb/HTTP_Document_API#Getting_Attachments_With_a_Document
-    NSString* path = $sprintf(@"/%@?rev=%@&revs=true&attachments=true",
+    NSString *path = $sprintf(@"/%@?rev=%@&revs=true&attachments=true",
             TDEscapeID(rev.docID), TDEscapeID(rev.revID));
 
     LogTo(SyncVerbose, @"%@: GET .%@", self, path);
-    NSString* urlStr = [_remote.absoluteString stringByAppendingString: path];
+    NSString *urlStr = [_remote.absoluteString stringByAppendingString:path];
 
     // Under ARC, using variable dl directly in the block given as an argument to initWithURL:...
     // results in compiler error (could be undefined variable)
     __weak ZSViewPuller *weakSelf = self;
     __block TDMultipartDownloader *dl = nil;
-    dl = [[TDMultipartDownloader alloc] initWithURL: [NSURL URLWithString: urlStr]
-                                           database: _db
-                                     requestHeaders: self.requestHeaders
+    dl = [[TDMultipartDownloader alloc] initWithURL:[NSURL URLWithString:urlStr]
+                                           database:_db
+                                     requestHeaders:self.requestHeaders
                                        onCompletion:
-                                               ^(TDMultipartDownloader* download, NSError *error) {
+                                               ^(TDMultipartDownloader *download, NSError *error) {
                                                    __strong ZSViewPuller *strongSelf = weakSelf;
                                                    // OK, now we've got the response revision:
                                                    if (error) {
@@ -258,10 +256,10 @@
                                                        [strongSelf revisionFailed];
                                                        strongSelf.changesProcessed++;
                                                    } else {
-                                                       TD_Revision* gotRev = [TD_Revision revisionWithProperties: download.document];
+                                                       TD_Revision *gotRev = [TD_Revision revisionWithProperties:download.document];
                                                        gotRev.sequence = rev.sequence;
                                                        // Add to batcher ... eventually it will be fed to -insertRevisions:.
-                                                       [_downloadsToInsert queueObject: gotRev];
+                                                       [_downloadsToInsert queueObject:gotRev];
                                                        [strongSelf asyncTaskStarted];
                                                    }
 
@@ -273,7 +271,7 @@
                                                    [strongSelf pullRemoteRevisions];
                                                }
     ];
-    [self addRemoteRequest: dl];
+    [self addRemoteRequest:dl];
     dl.authorizer = _authorizer;
     [dl start];
 }
@@ -315,8 +313,7 @@
             }
         }
 
-        LogTo(SyncVerbose, @"%@ finished inserting %u revisions",
-                self, (unsigned) downloads.count);
+        LogTo(SyncVerbose, @"%@ finished inserting %u revisions", self, (unsigned) downloads.count);
 
         success = YES;
     } @catch (NSException *x) {
