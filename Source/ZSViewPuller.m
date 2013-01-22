@@ -303,15 +303,12 @@
                 TDStatus status = 0;
 
                 if (revList.count > 0) {
-
-                    //We always replace whatever we have for a doc in the DB - We only want the current winning revision (ZS)
-                    [_db putRevision:rev prevRevisionID:nil allowConflict:NO status:&status];
-
-                } else{
-
-                    //Insert new document
+                    TD_Revision *latestRev = (TD_Revision *)revList.allRevisions[0];
+                    if (latestRev.deleted) {
+                        [_db putRevision:rev prevRevisionID:nil allowConflict:NO status:&status];
+                    }
+                } else {
                     status = [_db forceInsert:rev revisionHistory:history source:_remote];
-
                 }
 
                 if (TDStatusIsError(status)) {
