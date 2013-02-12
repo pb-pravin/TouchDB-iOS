@@ -314,14 +314,10 @@
                 }
 
                 if (TDStatusIsError(status)) {
-                    if (status == kTDStatusForbidden)
-                        LogTo(Sync, @"%@: Remote rev failed validation: %@", self, rev);
-                    else {
-                        Warn(@"%@ failed to write %@: status=%d", self, rev, status);
-                        [self revisionFailed];
-                        self.error = TDStatusToNSError(status, nil);
-                        continue;
-                    }
+                    NSLog(@"%@ failed to write %@: status=%d", self, rev, status);
+                    [self revisionFailed];
+                    self.error = TDStatusToNSError(status, nil);
+                    continue;
                 }
 
             }
