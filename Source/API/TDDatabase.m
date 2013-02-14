@@ -8,9 +8,14 @@
 
 #import "TouchDBPrivate.h"
 #import "TD_Database+Insertion.h"
+#import "TD_DatabaseChange.h"
 #import "TDModelFactory.h"
 #import "TDCache.h"
 #import "TD_DatabaseManager.h"
+
+#if TARGET_OS_IPHONE
+#import <UIKit/UIApplication.h>
+#endif
 
 
 #define kDocRetainLimit 50
@@ -41,6 +46,17 @@ NSString* const kTDDatabaseChangeNotification = @"TDDatabaseChange";
         _unsavedModelsMutable = [NSMutableSet set];
         [[NSNotificationCenter defaultCenter] addObserver: self
                                                  selector: @selector(tddbNotification:) name: nil object: tddb];
+#if TARGET_OS_IPHONE
+        [[NSNotificationCenter defaultCenter] addObserver: self
+                                                 selector: @selector(appBackgrounding:)
+                                                     name: UIApplicationWillTerminateNotification
+                                                   object: nil];
+        // Also clean up when app is backgrounded, on iOS:
+        [[NSNotificationCenter defaultCenter] addObserver: self
+                                                 selector: @selector(appBackgrounding:)
+                                                     name: UIApplicationDidEnterBackgroundNotification
+                                                   object: nil];
+#endif
         if (0)
             _modelFactory = nil;  // appeases static analyzer
     }
@@ -57,11 +73,12 @@ NSString* const kTDDatabaseChangeNotification = @"TDDatabaseChange";
 // Notified of a change in the TD_Database:
 - (void) tddbNotification: (NSNotification*)n {
     if ([n.name isEqualToString: TD_DatabaseChangesNotification]) {
-        for (NSDictionary* change in (n.userInfo)[@"changes"]) {
-            TD_Revision* rev = change[@"winner"];
-            NSURL* source = change[@"source"];
-            
-            [[self cachedDocumentWithID: rev.docID] revisionAdded: rev source: source];
+        for (TD_DatabaseChange* change in (n.userInfo)[@"changes"]) {
+            TD_Revision* winningRev = change.winningRevision;
+            NSURL* source = change.source;
+
+            // Notify the corresponding instantiated TDDocument object (if any):
+            [[self cachedDocumentWithID: winningRev.docID] revisionAdded: change];
 
             // Post a database-changed notification, but only post one per runloop cycle by using
             // a notification queue. If the current notification has the "external" flag, make sure
@@ -80,6 +97,11 @@ NSString* const kTDDatabaseChangeNotification = @"TDDatabaseChange";
                               forModes: @[NSRunLoopCommonModes]];
         }
     }
+}
+
+
+- (void) appBackgrounding: (NSNotification*)n {
+    [self autosaveAllModels: nil];
 }
 
 
@@ -270,6 +292,16 @@ NSString* const kTDDatabaseChangeNotification = @"TDDatabaseChange";
 
 - (BOOL) saveAllModels: (NSError**)outError {
     NSArray* unsaved = self.unsavedModels;
+    if (unsaved.count == 0)
+        return YES;
+    return [TDModel saveModels: unsaved error: outError];
+}
+
+
+- (BOOL) autosaveAllModels: (NSError**)outError {
+    NSArray* unsaved = [self.unsavedModels my_filter: ^int(TDModel* model) {
+        return model.autosaves;
+    }];
     if (unsaved.count == 0)
         return YES;
     return [TDModel saveModels: unsaved error: outError];

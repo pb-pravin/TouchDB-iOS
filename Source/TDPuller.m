@@ -171,7 +171,7 @@ static NSString* joinQuotedEscaped(NSArray* strings);
     for (NSDictionary* change in changes) {
         @autoreleasepool {
             // Process each change from the feed:
-            NSString* remoteSequenceID = [change[@"seq"] description];
+            id remoteSequenceID = change[@"seq"];
             NSString* docID = change[@"id"];
             if (!docID || ![TD_Database isValidDocumentID: docID])
                 continue;
@@ -243,7 +243,7 @@ static NSString* joinQuotedEscaped(NSArray* strings);
 - (void) processInbox: (TD_RevisionList*)inbox {
     // Ask the local database which of the revs are not known to it:
     LogTo(SyncVerbose, @"%@: Looking up %@", self, inbox);
-    NSString* lastInboxSequence = [inbox.allRevisions.lastObject remoteSequenceID];
+    id lastInboxSequence = [inbox.allRevisions.lastObject remoteSequenceID];
     NSUInteger total = _changesTotal - inbox.count;
     if (![_db findMissingRevisions: inbox]) {
         Warn(@"%@ failed to look up local revs", self);
@@ -347,20 +347,18 @@ static NSString* joinQuotedEscaped(NSArray* strings);
     // been added since the latest revisions we have locally.
     // See: http://wiki.apache.org/couchdb/HTTP_Document_API#GET
     // See: http://wiki.apache.org/couchdb/HTTP_Document_API#Getting_Attachments_With_a_Document
-    NSString* path = $sprintf(@"/%@?rev=%@&revs=true&attachments=true",
+    NSString* path = $sprintf(@"%@?rev=%@&revs=true&attachments=true",
                               TDEscapeID(rev.docID), TDEscapeID(rev.revID));
     NSArray* knownRevs = [_db getPossibleAncestorRevisionIDs: rev limit: kMaxNumberOfAttsSince];
     if (knownRevs.count > 0)
         path = [path stringByAppendingFormat: @"&atts_since=%@", joinQuotedEscaped(knownRevs)];
-    
-    LogTo(SyncVerbose, @"%@: GET .%@", self, path);
-    NSString* urlStr = [_remote.absoluteString stringByAppendingString: path];
+    LogTo(SyncVerbose, @"%@: GET %@", self, path);
     
     // Under ARC, using variable dl directly in the block given as an argument to initWithURL:...
     // results in compiler error (could be undefined variable)
     __weak TDPuller *weakSelf = self;
     __block TDMultipartDownloader *dl = nil;
-    dl = [[TDMultipartDownloader alloc] initWithURL: [NSURL URLWithString: urlStr]
+    dl = [[TDMultipartDownloader alloc] initWithURL: TDAppendToURL(_remote, path)
                                            database: _db
                                      requestHeaders: self.requestHeaders
                                        onCompletion:

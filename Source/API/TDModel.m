@@ -21,6 +21,17 @@
 
 
 @implementation TDModel
+{
+    TDDocument* _document;
+    CFAbsoluteTime _changedTime;
+    bool _autosaves :1;
+    bool _isNew     :1;
+    bool _needsSave :1;
+
+    NSMutableDictionary* _properties;   // Cached property values, including changed values
+    NSMutableSet* _changedNames;        // Names of properties that have been changed but not saved
+    NSMutableDictionary* _changedAttachments;
+}
 
 
 - (id)init {
@@ -32,7 +43,7 @@
     self = [super init];
     if (self) {
         if (document) {
-            LogTo(TDModel, @"%@ initWithDocument: %@ @%p", self, document, document);
+            LogTo(TDModel, @"%@ initWithDocument: %@ @%p", self.class, document, document);
             self.document = document;
             [self didLoadFromDocument];
         } else {
@@ -193,18 +204,23 @@
 @synthesize isNew=_isNew, autosaves=_autosaves;
 
 
+- (NSTimeInterval) autosaveDelay {
+    return 0.0;
+}
+
+
 - (void) setAutosaves: (bool) autosaves {
     if (autosaves != _autosaves) {
         _autosaves = autosaves;
         if (_autosaves && _needsSave)
-            [self performSelector: @selector(save:) withObject: nil afterDelay: 0.0];
+            [self performSelector: @selector(save:) withObject: nil afterDelay: self.autosaveDelay];
     }
 }
 
 
 - (void) markNeedsSave {
     if (_autosaves && !_needsSave)
-        [self performSelector: @selector(save:) withObject: nil afterDelay: 0.0];
+        [self performSelector: @selector(save:) withObject: nil afterDelay: self.autosaveDelay];
     self.needsSave = YES;
 }
 

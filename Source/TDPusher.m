@@ -17,6 +17,7 @@
 #import "TD_Database.h"
 #import "TD_Database+Insertion.h"
 #import "TD_Revision.h"
+#import "TD_DatabaseChange.h"
 #import "TDBatcher.h"
 #import "TDMultipartUploader.h"
 #import "TDInternal.h"
@@ -46,14 +47,12 @@ static int findCommonAncestor(TD_Revision* rev, NSArray* possibleIDs);
 - (TD_FilterBlock) filter {
     if (!_filterName)
         return NULL;
-    TD_FilterBlock filter = [_db filterNamed: _filterName];
+    TDStatus status;
+    TD_FilterBlock filter = [_db compileFilterNamed: _filterName status: &status];
     if (!filter) {
-        Warn(@"%@: No TDFilterBlock registered for filter '%@'", self, _filterName);
+        Warn(@"%@: No filter '%@' (err %d)", self, _filterName, status);
         if (!_error) {
-            NSDictionary* info = $dict({NSLocalizedFailureReasonErrorKey, @"Unknown filter"});
-            self.error = [NSError errorWithDomain: TDHTTPErrorDomain
-                                             code: kTDStatusNotFound
-                                         userInfo: info];
+            self.error = TDStatusToNSError(status, nil);
         }
         [self stop];
     }
@@ -157,10 +156,10 @@ static int findCommonAncestor(TD_Revision* rev, NSArray* possibleIDs);
 
 - (void) dbChanged: (NSNotification*)n {
     NSArray* changes = (n.userInfo)[@"changes"];
-    for (NSDictionary* change in changes) {
+    for (TD_DatabaseChange* change in changes) {
         // Skip revisions that originally came from the database I'm syncing to:
-        if (![change[@"source"] isEqual: _remote]) {
-            TD_Revision* rev = change[@"rev"];
+        if (![change.source isEqual: _remote]) {
+            TD_Revision* rev = change.addedRevision;
             if (_filterName) {
                 TD_FilterBlock filter = self.filter;
                 if (!filter || !filter(rev, _filterParameters))
@@ -332,10 +331,9 @@ static int findCommonAncestor(TD_Revision* rev, NSArray* possibleIDs);
     self.changesTotal++;
     [self asyncTaskStarted];
 
-    NSString* path = $sprintf(@"/%@?new_edits=false", TDEscapeID(rev.docID));
-    NSString* urlStr = [_remote.absoluteString stringByAppendingString: path];
+    NSString* path = $sprintf(@"%@?new_edits=false", TDEscapeID(rev.docID));
     __block TDMultipartUploader* uploader = [[TDMultipartUploader alloc]
-                                  initWithURL: [NSURL URLWithString: urlStr]
+                                  initWithURL: TDAppendToURL(_remote, path)
                                      streamer: bodyStream
                                requestHeaders: self.requestHeaders
                                  onCompletion: ^(id response, NSError *error) {

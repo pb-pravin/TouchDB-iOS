@@ -17,6 +17,7 @@
 #import "TD_Database+Attachments.h"
 #import "TDInternal.h"
 #import "TD_Revision.h"
+#import "TD_DatabaseChange.h"
 #import "TDCollateJSON.h"
 #import "TDBlobStore.h"
 #import "TDPuller.h"
@@ -32,6 +33,9 @@
 NSString* const TD_DatabaseChangesNotification = @"TD_DatabaseChanges";
 NSString* const TD_DatabaseWillCloseNotification = @"TD_DatabaseWillClose";
 NSString* const TD_DatabaseWillBeDeletedNotification = @"TD_DatabaseWillBeDeleted";
+
+
+static id<TDFilterCompiler> sFilterCompiler;
 
 
 @implementation TD_Database
@@ -414,16 +418,10 @@ static BOOL removeItemIfExists(NSString* path, NSError** outError) {
 
 
 /** Posts a local NSNotification of a new revision of a document. */
-- (void) notifyChange: (TD_Revision*)rev
-               source: (NSURL*)source
-           winningRev: (TD_Revision*)winningRev
-{
-    NSDictionary* userInfo = $dict({@"rev", rev},
-                                   {@"source", source},
-                                   {@"winner", winningRev});
+- (void) notifyChange: (TD_DatabaseChange*)change {
     if (!_changesToNotify)
         _changesToNotify = [[NSMutableArray alloc] init];
-    [_changesToNotify addObject: userInfo];
+    [_changesToNotify addObject: change];
     [self postChangeNotifications];
 }
 
@@ -442,14 +440,13 @@ static BOOL removeItemIfExists(NSString* path, NSError** outError) {
 
 - (void) dbChanged: (NSNotification*)n {
     TD_Database* senderDB = n.object;
+    // Was this posted by a _different_ TD_Database instance on the same database as me?
     if (senderDB != self && [senderDB.path isEqualToString: _path]) {
-        for (NSDictionary* changes in (n.userInfo)[@"changes"]) {
+        for (TD_DatabaseChange* change in (n.userInfo)[@"changes"]) {
             // TD_Revision objects have mutable state inside, so copy this one first:
-            TD_Revision* rev = [changes[@"rev"] copy];
-            TD_Revision* winner = [changes[@"winner"] copy];
-            NSURL* source = changes[@"source"];
+            TD_DatabaseChange* copiedChange = [change copy];
             MYOnThread(_thread, ^{
-                [self notifyChange: rev source: source winningRev: winner];
+                [self notifyChange: copiedChange];
             });
         }
     }
@@ -847,18 +844,24 @@ static NSDictionary* makeRevisionHistoryDict(NSArray* history) {
 /** Returns the rev ID of the 'winning' revision of this document, and whether it's deleted. */
 - (NSString*) winningRevIDOfDocNumericID: (SInt64)docNumericID
                                isDeleted: (BOOL*)outIsDeleted
+                              isConflict: (BOOL*)outIsConflict // optional
 {
     Assert(docNumericID > 0);
     FMResultSet* r = [_fmdb executeQuery: @"SELECT revid, deleted FROM revs"
                                            " WHERE doc_id=? and current=1"
-                                           " ORDER BY deleted asc, revid desc LIMIT 1",
+                                           " ORDER BY deleted asc, revid desc LIMIT 2",
                                           @(docNumericID)];
     NSString* revID = nil;
     if ([r next]) {
         revID = [r stringForColumnIndex: 0];
         *outIsDeleted = [r boolForColumnIndex: 1];
+        // The document is in conflict if there are two+ result rows that are not deletions.
+        if (outIsConflict)
+            *outIsConflict = !*outIsDeleted && [r next] && ![r boolForColumnIndex: 1];
     } else {
         *outIsDeleted = NO;
+        if (outIsConflict)
+            *outIsConflict = NO;
     }
     [r close];
     return revID;
@@ -920,6 +923,26 @@ const TDChangesOptions kDefaultTDChangesOptions = {UINT_MAX, 0, NO, NO, YES};
 }
 
 
+#pragma mark - FILTERS:
+
+
+- (id) getDesignDocFunction: (NSString*)fnName
+                        key: (NSString*)key
+                   language: (NSString**)outLanguage
+{
+    NSArray* path = [fnName componentsSeparatedByString: @"/"];
+    if (path.count != 2)
+        return nil;
+    TD_Revision* rev = [self getDocumentWithID: [@"_design/" stringByAppendingString: path[0]]
+                                    revisionID: nil];
+    if (!rev)
+        return nil;
+    *outLanguage = rev[@"language"] ?: @"javascript";
+    NSDictionary* container = $castIf(NSDictionary, rev[key]);
+    return container[path[1]];
+}
+
+
 - (void) defineFilter: (NSString*)filterName asBlock: (TD_FilterBlock)filterBlock {
     if (!_filters)
         _filters = [[NSMutableDictionary alloc] init];
@@ -928,6 +951,43 @@ const TDChangesOptions kDefaultTDChangesOptions = {UINT_MAX, 0, NO, NO, YES};
 
 - (TD_FilterBlock) filterNamed: (NSString*)filterName {
     return _filters[filterName];
+}
+
+
++ (void) setFilterCompiler: (id<TDFilterCompiler>)compiler {
+    sFilterCompiler = compiler;
+}
+
++ (id<TDFilterCompiler>) filterCompiler {
+    return sFilterCompiler;
+}
+
+
+- (TD_FilterBlock) compileFilterNamed: (NSString*)filterName status: (TDStatus*)outStatus {
+    TD_FilterBlock filter = [self filterNamed: filterName];
+    if (filter)
+        return filter;
+    if (!sFilterCompiler) {
+        *outStatus = kTDStatusNotFound;
+        return nil;
+    }
+    NSString* language;
+    NSString* source = $castIf(NSString, [self getDesignDocFunction: filterName
+                                                                key: @"filters"
+                                                           language: &language]);
+    if (!source) {
+        *outStatus = kTDStatusNotFound;
+        return nil;
+    }
+
+    filter = [sFilterCompiler compileFilterFunction: source language: language];
+    if (!filter) {
+        Warn(@"Filter %@ failed to compile", filterName);
+        *outStatus = kTDStatusCallbackError;
+        return nil;
+    }
+    [self defineFilter: filterName asBlock: filter];
+    return filter;
 }
 
 
@@ -989,6 +1049,33 @@ const TDChangesOptions kDefaultTDChangesOptions = {UINT_MAX, 0, NO, NO, YES};
         if ([_fmdb intForQuery: @"SELECT count(*) FROM views WHERE name=?", name] <= 0)
             return [self viewNamed: name];
     }
+}
+
+- (TD_View*) compileViewNamed: (NSString*)tdViewName status: (TDStatus*)outStatus {
+    TD_View* view = [self existingViewNamed: tdViewName];
+    if (view && view.mapBlock)
+        return view;
+    
+    // No TouchDB view is defined, or it hasn't had a map block assigned;
+    // see if there's a CouchDB view definition we can compile:
+    if (![TD_View compiler]) {
+        *outStatus = kTDStatusNotFound;
+        return nil;
+    }
+    NSString* language;
+    NSDictionary* viewProps = $castIf(NSDictionary, [self getDesignDocFunction: tdViewName
+                                                                           key: @"views"
+                                                                      language: &language]);
+    if (!viewProps) {
+        *outStatus = kTDStatusNotFound;
+        return nil;
+    }
+    view = [self viewNamed: tdViewName];
+    if (![view compileFromProperties: viewProps language: language]) {
+        *outStatus = kTDStatusCallbackError;
+        return nil;
+    }
+    return view;
 }
 
 
@@ -1092,7 +1179,8 @@ const TDChangesOptions kDefaultTDChangesOptions = {UINT_MAX, 0, NO, NO, YES};
                 if (docNumericID > 0) {
                     BOOL deleted;
                     NSString* revID = [self winningRevIDOfDocNumericID: docNumericID
-                                                             isDeleted: &deleted];
+                                                             isDeleted: &deleted
+                                                            isConflict: NULL];
                     if (revID)
                         value = $dict({@"rev", revID}, {@"deleted", $true});
                 }

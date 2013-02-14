@@ -21,6 +21,7 @@
 #import "TDAuthorizer.h"
 #import "TDBatcher.h"
 #import "TDReachability.h"
+#import "TDURLProtocol.h"
 #import "TDInternal.h"
 #import "TDMisc.h"
 #import "TDBase64.h"
@@ -272,18 +273,22 @@ NSString* TDReplicatorStoppedNotification = @"TDReplicatorStopped";
                                                object: nil];
 #endif
     
-    // Start reachability checks. (This creates another ref cycle, because
-    // the block also retains a ref to self. Cycle is also broken in -stopped.)
     _online = NO;
-    _host = [[TDReachability alloc] initWithHostName: _remote.host];
-    
-    __weak id weakSelf = self;
-    _host.onChange = ^{
-        TDReplicator *strongSelf = weakSelf;
-        [strongSelf reachabilityChanged:strongSelf->_host];
-    };
-    [_host start];
-    [self reachabilityChanged: _host];
+    if ([NSClassFromString(@"TDURLProtocol") handlesURL: _remote]) {
+        [self goOnline];    // local-to-local replication
+    } else {
+        // Start reachability checks. (This creates another ref cycle, because
+        // the block also retains a ref to self. Cycle is also broken in -stopped.)
+        _host = [[TDReachability alloc] initWithHostName: _remote.host];
+        
+        __weak id weakSelf = self;
+        _host.onChange = ^{
+            TDReplicator *strongSelf = weakSelf;
+            [strongSelf reachabilityChanged:strongSelf->_host];
+        };
+        [_host start];
+        [self reachabilityChanged: _host];
+    }
 }
 
 
@@ -526,16 +531,16 @@ NSString* TDReplicatorStoppedNotification = @"TDReplicatorStopped";
 
 
 - (TDRemoteJSONRequest*) sendAsyncRequest: (NSString*)method
-                                     path: (NSString*)relativePath
+                                     path: (NSString*)path
                                      body: (id)body
                              onCompletion: (TDRemoteRequestCompletionBlock)onCompletion
 {
-    LogTo(SyncVerbose, @"%@: %@ .%@", self, method, relativePath);
+    LogTo(SyncVerbose, @"%@: %@ %@", self, method, path);
     NSURL* url;
-    if ([relativePath hasPrefix: @"/"]) {
-        url = [[NSURL URLWithString: relativePath relativeToURL: _remote] absoluteURL];
+    if ([path hasPrefix: @"/"]) {
+        url = [[NSURL URLWithString: path relativeToURL: _remote] absoluteURL];
     } else {
-        url = [_remote URLByAppendingPathComponent: relativePath];
+        url = TDAppendToURL(_remote, path);
     }
     onCompletion = [onCompletion copy];
     

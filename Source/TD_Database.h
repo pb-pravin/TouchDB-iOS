@@ -28,6 +28,13 @@ extern NSString* const TD_DatabaseWillBeDeletedNotification;
 /** Filter block, used in changes feeds and replication. */
 typedef BOOL (^TD_FilterBlock) (TD_Revision* revision, NSDictionary* params);
 
+/** An external object that knows how to map source code of some sort into executable functions. */
+@protocol TDFilterCompiler <NSObject>
+- (TD_FilterBlock) compileFilterFunction: (NSString*)filterSource language: (NSString*)language;
+@end
+
+
+
 
 /** Options for what metadata to include in document bodies */
 typedef unsigned TDContentOptions;
@@ -92,7 +99,7 @@ extern const TDChangesOptions kDefaultTDChangesOptions;
     This is primarily used to install a canned database on first launch of an app, in which case you should first check .exists to avoid replacing the database if it exists already. The canned database would have been copied into your app bundle at build time.
     @param databasePath  Path of the database file that should replace this one.
     @param attachmentsPath  Path of the associated attachments directory, or nil if there are no attachments.
-    @param error  If an error occurs, it will be stored into this parameter on return.
+    @param outError  If an error occurs, it will be stored into this parameter on return.
     @return  YES if the database was copied, NO if an error occurred. */
 - (BOOL) replaceWithDatabaseFile: (NSString*)databasePath
                  withAttachments: (NSString*)attachmentsPath
@@ -166,6 +173,11 @@ extern const TDChangesOptions kDefaultTDChangesOptions;
 
 - (TD_View*) makeAnonymousView;
 
+/** Returns the view with the given name. If there is none, and the name is in CouchDB
+    format ("designdocname/viewname"), it attempts to load the view properties from the
+    design document and compile them with the TDViewCompiler. */
+- (TD_View*) compileViewNamed: (NSString*)name status: (TDStatus*)outStatus;
+
 @property (readonly) NSArray* allViews;
 
 - (TD_RevisionList*) changesSinceSequence: (SequenceNumber)lastSequence
@@ -177,5 +189,10 @@ extern const TDChangesOptions kDefaultTDChangesOptions;
 - (void) defineFilter: (NSString*)filterName asBlock: (TD_FilterBlock)filterBlock;
 
 - (TD_FilterBlock) filterNamed: (NSString*)filterName;
+
+- (TD_FilterBlock) compileFilterNamed: (NSString*)filterName status: (TDStatus*)outStatus;
+
++ (void) setFilterCompiler: (id<TDFilterCompiler>)compiler;
++ (id<TDFilterCompiler>) filterCompiler;
 
 @end

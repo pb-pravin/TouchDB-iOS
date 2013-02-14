@@ -16,6 +16,7 @@
 #import "TD_Server.h"
 #import "TDBrowserIDAuthorizer.h"
 #import "MYBlockUtils.h"
+#import "MYURLUtils.h"
 
 
 #undef RUN_IN_BACKGROUND
@@ -217,6 +218,37 @@ static inline BOOL isLocalDBName(NSString* url) {
     [self setRemoteDictionaryValue: headers forKey: @"headers"];
 }
 
+
+#pragma mark - AUTHENTICATION:
+
+
+- (NSURLCredential*) credential {
+    return [self.remoteURL my_credentialForRealm: nil
+                            authenticationMethod: NSURLAuthenticationMethodDefault];
+}
+
+- (void) setCredential:(NSURLCredential *)cred {
+    // Hardcoded username doesn't mix with stored credentials.
+    NSURL* url = self.remoteURL;
+    NSString* urlStr = url.my_URLByRemovingUser.absoluteString;
+    if (self.pull)
+        self.target = urlStr;
+    else
+        self.source = urlStr;
+
+    NSURLProtectionSpace* space = [url my_protectionSpaceWithRealm: nil
+                                            authenticationMethod: NSURLAuthenticationMethodDefault];
+    NSURLCredentialStorage* storage = [NSURLCredentialStorage sharedCredentialStorage];
+    if (cred) {
+        [storage setDefaultCredential: cred forProtectionSpace: space];
+    } else {
+        cred = [storage defaultCredentialForProtectionSpace: space];
+        if (cred)
+            [storage removeCredential: cred forProtectionSpace: space];
+    }
+    [self restart];
+}
+
 - (NSDictionary*) OAuth {
     NSDictionary* auth = $castIf(NSDictionary, (self.remoteDictionary)[@"auth"]);
     return auth[@"oauth"];
@@ -310,8 +342,9 @@ static inline BOOL isLocalDBName(NSString* url) {
         return;
     [self tellDatabaseManager:^(TD_DatabaseManager* dbmgr) {
         // This runs on the server thread:
-        [_bg_replicator stop];
+        [self bg_stopReplicator];
     }];
+    _started = NO;
 }
 
 
@@ -328,6 +361,11 @@ static inline BOOL isLocalDBName(NSString* url) {
           processed: (NSUInteger)changesProcessed
             ofTotal: (NSUInteger)changesTotal
 {
+    if (!_started && !self.persistent)
+        return;
+    if (mode == kTDReplicationStopped)
+        _started = NO;
+    
     BOOL changed = NO;
     if (mode != _mode) {
         self.mode = mode;
@@ -386,6 +424,14 @@ static inline BOOL isLocalDBName(NSString* url) {
                                                  name: TDReplicatorProgressChangedNotification
                                                object: _bg_replicator];
     [self bg_updateProgress: _bg_replicator];
+}
+
+
+// CAREFUL: This is called on the server's background thread!
+- (void) bg_stopReplicator {
+    [_bg_replicator stop];
+    _bg_replicator = nil;
+    _bg_serverDatabase = nil;
 }
 
 
